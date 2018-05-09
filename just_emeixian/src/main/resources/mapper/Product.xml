@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.just.dao.ProductMapper">
+
+    <!--<resultMap type="User" id="userResult" >-->
+    		<!--<id column="uId" property="uId" javaType="int"/>-->
+    		<!--<result column="userName" property="userName" jdbcType="VARCHAR"/>-->
+			<!--<result column="password" property="password" jdbcType="VARCHAR"/>-->
+			<!--<result column="pone" property="poneNum" jdbcType="VARCHAR"/>-->
+    <!--</resultMap>-->
+	<!---->
+	<!--<select id="confirmUser" resultMap="userResult">-->
+		<!--select * from Emeixian_User where userName = #{userName}-->
+	<!--</select>-->
+	<!---->
+	<!--<insert id="addUser" parameterType="User">-->
+		<!--insert into Emeixian_User(userName,password,pone) values(#{userName},#{password},#{poneNum})-->
+	<!--</insert>-->
+
+
+	<resultMap id="productResult" type="Product">
+		<id property="productId" column="product_id" javaType="int"></id>
+		<result property="pSpec" column="product_spec" jdbcType="VARCHAR"/>
+		<result property="categoryId" column="category_id" javaType="int"/>
+		<result property="pMoney" column="product_money" javaType="int"/>
+		<result property="pImg" column="product_img" jdbcType="VARCHAR"/>
+        <result property="productName" column="product_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="details" type="Product">
+        <id property="productId" column="product_id" javaType="int"></id>
+        <result property="pSpec" column="product_spec" jdbcType="VARCHAR"/>
+        <result property="categoryId" column="category_id" javaType="int"/>
+        <result property="pMoney" column="product_money" javaType="int"/>
+        <result property="pImg" column="product_img" jdbcType="VARCHAR"/>
+        <result property="productInfo" column="product_info" jdbcType="VARCHAR"/>
+        <result property="productTime" column="product_time" javaType="DATE"/>
+        <result property="productDiscount" column="product_discount" javaType="double"/>
+        <result property="productPoint" column="product_point" javaType="double"/>
+        <collection property="specs" column="product_id" select="com.just.dao.SpecMapper.selectSpecForProduct"/>
+        <collection property="units" column="product_id" select="com.just.dao.UnitMapper.selectUnitForProduct"/>
+    </resultMap>
+
+	<select id="findsProduct" resultMap="productResult">
+		SELECT * FROM product WHERE category_id = #{category_id}
+	</select>
+
+	<insert id="addNewProduct" useGeneratedKeys="true" keyProperty="pId">
+		INSERT INTO product(product_spec,product_number,product_name,product_point,product_info,product_time,product_discount,category_id,product_money)
+			VALUES (
+					#{pSpec},#{pNumber},#{pName},#{pPoint},#{pInfo},#{pTime},#{pDiscount},#{categoryId},#{pMoney})
+	</insert>
+
+	<update id="updateProductDetail">
+		UPDATE product
+			SET
+			<if test="pSpec != null">
+				product_spec=#{pSpec},
+			</if>
+			<if test="pNumber != null and pNumber != 0">
+				product_number=#{pNumber},
+			</if>
+			<if test="pName != null">
+				product_name=#{pName},
+			</if>
+			<if test="pPoint != null and pPoint != 0">
+				product_point=#{pPoint},
+			</if>
+			<if test="pInfo != null">
+				product_info=#{pInfo},
+			</if>
+			<if test="pTime != null">
+				product_time=#{pTime},
+			</if>
+			<if test="pDiscount != null and pDiscount != 0">
+				product_discount=#{pDiscount},
+			</if>
+			<if test="category_id != null and category_id != 0">
+				category_id=#{categoryId},
+			</if>
+			<if test="pMoney != null and pMoney != 0">
+				product_money=#{pMoney},
+			</if>
+			pId=#{pId}
+			WHERE 1=1 AND product_id=#{productId}
+	</update>
+    <!--根据商品Id查出对应的商品-->
+	<select id="selectProduct" resultMap="details">
+		select *
+		from product
+		where 1 = 1
+		and product_id=#{productId}
+	</select>
+
+
+
+
+
+
+
+
+</mapper>

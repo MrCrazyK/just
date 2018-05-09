@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.just.dao.StockMapper">
+
+    <resultMap id="stocks" type="Stock">
+        <id column="stock_id" property="stockId" javaType="int"/>
+        <result column="stock_name" property="stockName" jdbcType="VARCHAR"/>
+        <result column="stock_num" property="stockNum" javaType="INTEGER"/>
+    </resultMap>
+
+    <select id="findStockByPriceId" parameterType="int" resultMap="stocks">
+		select * from stock where price_id = #{priceId}
+	</select>
+
+    <select id="findStockById" parameterType="int" resultMap="stocks">
+		SELECT * FROM stock WHERE 1=1 AND stock_id=#{stockId}
+	</select>
+
+    <!--根据商品查出库存-->
+    <select id="selectStock" parameterType="int" resultType="com.just.entity.Stock">
+		SELECT * FROM stock where price_id=#{pId}
+	</select>
+
+
+    <insert id="addStockByPriceId">
+        INSERT INTO stock(stockName,stockNum,priceId)
+        	VALUES  (#{stockName},#{stockNum},#{stockId})
+	</insert>
+    <select id="confirm">
+		SELECT * FROM stock WHERE stockName=#{stockName} and stockNum = #{stockNum} AND price_id=#{priceId}
+	</select>
+    <!--在完成订单时实现将库存减少-->
+    <update id="updateByOrder" >
+        UPDATE stock(stockNum) VALUES (stockNum - #{stockNum}) WHERE stock_id = #{stockId}
+    </update>
+    <!--管理员更改库存信息-->
+    <update id="updateByAdmin">
+        UPDATE stock(stockName,stockNum,price_id) VALUES  (#{stockName},#{stockNum},#{priceId}) where 1=1 and stockId = #{stockId}
+    </update>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.just.dao.LBTMapper">
+
+	<resultMap type="com.just.entity.LBT" id="LBTResult">
+		<id property="lbtId" column="lbt_id" javaType="Integer"/>
+		<id property="lbtName" column="lbt_name" jdbcType="VARCHAR"/>
+		<result property="lbtPath" column="lbt_path" jdbcType="VARCHAR"/>
+		<result property="lbtUrl" column="lbt_url" jdbcType="VARCHAR"/>
+		<result property="pId" column="product_id" javaType="Integer"></result>
+	</resultMap>
+
+
+	<update id="updaterLbtById" parameterType="LBT" >
+		UPDATE LBT
+		set lbt_path = #{lbtPath},
+		    lbt_url = #{lbtUrl}
+		where lbt_id = #{lbtId}
+	</update>
+
+	<update id="updatelbtUrlById" parameterType="LBT" >
+		UPDATE LBT
+		set lbt_url = #{lbtUrl}
+		where lbt_id = #{lbtId}
+	</update>
+
+	<update id="updaterPathById" parameterType="LBT" >
+		UPDATE LBT
+		set lbt_path = #{lbtPath}
+		where lbt_id = #{lbtId}
+	</update>
+
+    <update id="UPId">
+        UPDATE LBT
+		set lbt_id = #{pId}
+		where lbt_id = #{lbtId}
+    </update>
+    <select id="countLbt">
+        select count(lbt_id)
+        from LBT
+        WHERE 1=1
+    </select>
+
+    <insert id="newLbt">
+        insert into LBT(lbt_id,lbt_path,lbt_url,product_id,lbt_name)
+        values (#{lbtId},#{lbtPath},#{lbtUrl},#{pId})
+    </insert>
+
+	<select id="selectLBTById" parameterType="Integer" resultMap="LBTResult">
+		select * from LBT where product_id = #{pId}
+	</select>
+    <select id="selectAll" resultMap="LBTResult">
+        select * from LBT WHERE 1=1
+    </select>
+
+
+
+
+	
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.just.dao.SpecMapper">
+
+    <resultMap id="specs" type="Spec">
+        <id column="spec_id" property="specId" javaType="int"/>
+        <result column="spec_name" property="specName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--根据商品查出规格-->
+    <select id="selectSpecForProduct" resultMap="specs">
+        select
+          s.spec_id,
+          s.spec_name
+        from
+          spec s,
+          pro_spec b
+        where
+          s.spec_id = b.spec_id
+        and
+          b.product_id = #{productId}
+    </select>
+    <select id="selectSpec" resultMap="specs">
+		SELECT * from spec WHERE spec_id=#{spec_id}
+	</select>
+    <select id="selectSpecId" parameterType="int" resultType="java.lang.Integer">
+		SELECT spec_id FROM pro_spec where product_id=#{pId}
+	</select>
+
+    <select id="selectSpecById" parameterType="int" resultMap="specs">
+		select * from spec where spec_id = #{specId}
+	</select>
+    <insert id="addNewSpec" useGeneratedKeys="true" keyProperty="spec_id">
+		INSERT INTO spec(spec_name) VALUES (#{specName})
+	</insert>
+    <select id="selectAll" resultMap="specs">
+		SELECT * from spec
+	</select>
+
+    <insert id="takeSpecToProduct">
+		INSERT INTO pro_spec(product_id,spec_id) VALUES (#{productId},#{spec.specId})
+	</insert>
+
+
+</mapper>
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderResultMap">
+    <resultMap type="Order" id="OrderResult">
+        <id column="order_id" property="orderId" javaType="int"/>
+        <result column="order_time" jdbcType="DATE" property="orderTime"/>
+        <result column="state" javaType="int" property="state"/>
+        <association column="address_id" property="address" javaType="int" select="com.just.dao.AddressMapper.selectAddressDid"/>
+        <collection select="com.just.dao.ShoppingCarMapper.selectShoppingCarsForOrder"
+                    javaType="java.util.List"
+                    property="shoppingCars"
+                    column="order_id"
+                    ofType="com.just.entity.ShoppingCar">
+            <id column="shoppingcar_id" property="shoppingCarId" javaType="int"/>
+            <result column="num" property="num" javaType="int"/>
+            <association property="price"
+                         column="price_id"
+                         select="com.just.dao.PriceMapper.selectPriceByPriceId"/>
+            <association property="stock"
+                         column="stock_id"
+                         select ="com.just.dao.StockMapper.findStockById"/>
+            <association property="user"
+                         column="u_id"
+                         select="com.just.dao.UserMapper.confirmUser"/>
+        </collection>
+
+    </resultMap>
+</mapper>

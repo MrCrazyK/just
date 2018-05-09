@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.just.dao.UnitMapper">
+
+    <resultMap id="units" type="Unit">
+        <id column="unit_id" property="unitId" javaType="int"/>
+        <result column="unit_name" property="unitName" jdbcType="VARCHAR"/>
+    </resultMap>
+	<!--根据商品查出对应的单位-->
+	<select id="selectUnitForProduct" resultMap="units">
+        select u.unit_id,u.unit_name
+        from unit u,pro_unit b
+        where u.unit_id = b.unit_id
+        and b.product_id = #{productId}
+    </select>
+	<select id="selectUnit" resultMap="units">
+		SELECT * from unit WHERE  unit_id=#{unit_id}
+	</select>
+	<select id="selectUnitId" parameterType="int" resultType="java.lang.Integer">
+		SELECT unit_id FROM pro_unit where product_id=#{pId}
+	</select>
+
+    <select id="selectUnitById" parameterType="int" resultMap="units">
+		select * from unit where unit_id = #{priceId}
+	</select>
+    <!--新建容量单位-->
+
+    <insert id="addNewUnit" useGeneratedKeys="true" keyProperty="unit_id">
+		INSERT INTO unit(unit_name) VALUES (#{unitName})
+	</insert>
+
+    <select id="selectAll" resultMap="units">
+		SELECT * FROM unit
+	</select>
+    <select id="confirm">
+		SELECT * FROM pro_unit WHERE unit_id = #{unit.unitId} and product_id = #{pId}
+	</select>
+    <insert id="takeUnitToProduct">
+		INSERT INTO pro_unit(product_id,unit_id) VALUES (#{productId},#{unit.unitId})
+	</insert>
+</mapper>
+

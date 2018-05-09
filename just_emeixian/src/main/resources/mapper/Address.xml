@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.just.dao.AddressMapper">
+
+    <!-- UserAddress类映射 -->
+    <resultMap type="Address" id="AddressResult">
+        <id column="address_id" jdbcType="INTEGER" property="addressId" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="detailed_address" javaType="java.lang.String" property="detailedAddress" />
+        <result column="rec_user" javaType="java.lang.String" property="recUser" />
+        <result column="phone" javaType="java.lang.String" property="phone" />
+        <result column="is_default" javaType="boolean" property="isDefault"/>
+        <association column="city_id" select="com.just.dao.CityMapper.selectCityById" property="city" />
+    </resultMap>
+
+    <insert id="insertAddress" parameterType="com.just.entity.Address" >
+		INSERT INTO address(user_id,detailed_address,rec_user,phone,city_id)
+		VALUE (#{userId},#{detailedAddress},#{recUser},#{phone},#{city.cityId})
+	</insert>
+
+    <select id="selectAddress" parameterType="int" resultMap="AddressResult">
+		SELECT * FROM address WHERE user_id = #{userId}
+	</select>
+
+    <delete id="deleteAddress" parameterType="int">
+		DELETE FROM address WHERE address_id=#{addressId}
+	</delete>
+
+    <select id="selectAddressDid" parameterType="int" resultMap="AddressResult">
+		SELECT * FROM address WHERE address_id=#{addressId}
+	</select>
+
+    <update id="setDefaultById" parameterType="int">
+		UPDATE address
+		SET
+			is_default = 1
+		where address_id = #{addressId}
+	</update>
+
+    <update id="disDefaultByUser" parameterType="int">
+		UPDATE address
+		SET
+			is_default = 0
+		where user_id = #{userId}
+		AND isDefault = 1
+	</update>
+
+    <update id="updateAddress"  parameterType="com.just.entity.Address" >
+		UPDATE address
+		SET
+			user_id = #{userId},
+			detailed_address = #{detailedAddress},
+			recUser = #{recUser},
+			phone = #{phone},
+			city_id = #{cityId}
+		where address_id=#{addressId}
+	</update>
+    <!--<insert id="insertAddress" parameterType="com.just.entity.Address" >-->
+        <!--INSERT INTO address(aname,email,city,detailAddress,telephone,phone,building, codes,u_id)-->
+        <!--VALUE (#{aname},#{email},#{city},#{detailAddress},#{telephone},#{phone},#{building},#{codes},#{u_id})-->
+    <!--</insert>-->
+
+    <!--<select id="selectAddress" parameterType="int" resultType="com.just.entity.Address">-->
+        <!--SELECT * FROM address WHERE u_id=#{u_id}-->
+    <!--</select>-->
+
+    <!--<delete id="deleteAddress" parameterType="int">-->
+        <!--DELETE FROM address WHERE dId=#{dId}-->
+    <!--</delete>-->
+
+    <!--<select id="selectAddressDid" parameterType="int" resultType="com.just.entity.Address">-->
+        <!--SELECT * FROM address WHERE dId=#{dId}-->
+    <!--</select>-->
+
+    <!--<update id="updateAddress"  parameterType="com.just.entity.Address" >-->
+        <!--UPDATE address-->
+        <!--SET aname=#{aname},-->
+            <!--email=#{email},-->
+            <!--city=#{city},-->
+            <!--detailAddress=#{detailAddress},-->
+            <!--telephone=#{telephone},-->
+            <!--phone=#{phone},-->
+            <!--building=#{building},-->
+            <!--codes=#{codes}-->
+        <!--where dId=#{dId}-->
+    <!--</update>-->
+</mapper>

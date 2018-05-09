@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.just.dao.OrderMapper">
+
+	<insert id="addNewOrder" useGeneratedKeys="true" keyProperty="orderId" >
+        INSERT INTO orders(u_id,address_id,order_time,state)
+              VALUES (#{user.uId},#{address.dId},#{orderTime},0)
+    </insert>
+
+	<select id="selectOrderById" parameterType="int" resultMap="OrderResultMap.OrderResult">
+        SELECT * FROM orders WHERE order_id = #{OrderId}
+    </select>
+	<select id="selectOrderForUser" parameterType="int" resultMap="OrderResultMap.OrderResult">
+        SELECT * FROM orders WHERE u_id = #{uId} and logistics_id != -1
+    </select>
+	<!--订单完成后将逻辑值改为1:已支付-->
+	<update id="payOrder">
+        UPDATE orders SET logistics_id = 1 WHERE oId = #{oId}
+    </update>
+	<!--删除单个订单  逻辑删除 仅仅是用户无法看见 将逻辑值改为 -1-->
+	<update id="deleteOrder">
+        UPDATE orders SET logistics_id = -1 WHERE oId = #{oId}
+    </update>
+
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.just.dao.UserMapper">
+
+	<!-- UserFavorite类映射 -->
+	<resultMap type="UserFavorite" id="UserFavoriteResult">
+		<id column="favourite_id" jdbcType="INTEGER" property="userFavoriteId" />
+		<result column="user_id" jdbcType="INTEGER" property="userId"/>
+		<result column="add_time" javaType="java.util.Date"  property="addTime"/>
+		<association column="product_id"  property="product"
+			select="com.just.dao.ProductMapper.selectProduct"/>
+	</resultMap>
+
+	<select id="findFocusList" resultMap="UserFavoriteResult" parameterType="int">
+		select * from user_favorite where user_id = #{userId}
+	</select>
+
+	<insert id="addToFocus">
+		INSERT INTO user_favorite(product_id,user_id,add_time) VALUES (#{product.productId},#{userId},#{addTime})
+	</insert>
+
+	<delete id="deleteFocus" parameterType="int">
+		DELETE FROM user_favorite WHERE 1=1 AND favourite_id =#{userFavoriteId}
+	</delete>
+
+	<delete id="disFocus">
+		DELETE FROM user_favorite WHERE 1=1 AND user_id = #{userId} AND product_id=#{product.productId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.just.dao.UserMapper">
+    <resultMap type="User" id="userResult" >
+        <id column="user_id" property="uId" javaType="int"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="phone" property="phoneNum" jdbcType="VARCHAR"/>
+        <result column="headimg_url" property="headImgUrl" jdbcType="VARCHAR"/>
+        <result column="birth" property="birth" jdbcType="DATE"/>
+        <result column="gender" property="gener" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="user_type" property="userType" javaType="int"/>
+        <result column="road" property="road" javaType="int"/>
+        <result column="detailed" property="detailed" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="confirmUser" resultMap="userResult">
+        select * from just_user where user_name = #{userName}
+    </select>
+
+    <select id="confirmUserType" resultType="int">
+        select userType from just_user where user_id = #{uId}
+    </select>
+
+    <insert id="addUser" parameterType="User">
+        insert into just_user(user_name,password,phone) values(#{userName},#{password},#{phoneNum})
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        update just_user set birth=#{birth},gender=#{gener},email=#{email},name=#{name},detailed=#{detailed},road=#{road} where user_id=#{uId}
+    </update>
+    <update id="updatePassword" parameterType="User">
+        update just_user set password=#{password} where user_id=#{uId}
+    </update>
+
+    <update id="updateHeadImgUrl" parameterType="User">
+        UPDATE just_user SET headimg_url = #{headImgUrl} where uId = #{uId}
+    </update>
+
+    <select id="findUserByuId" parameterType="Integer" resultMap="userResult">
+        SELECT * FROM just_user WHERE user_id = #{uId}
+    </select>
+    <select id="userLogin" parameterType="User" resultMap="userResult">
+		SELECT *
+		FROM just_user
+		WHERE user_name=#{userName} and password=#{password}
+	</select>
+
+
+    <!--基金会回家回家好好-->
+    <!--一个用户的所有个人信息字段-->
+    <!--<sql id="allForOne">soolife_user.userId,userName,userPwd,userPhone,userGender,userPocket,userEdu,userIndustry,userSalary,userIsMarry,userHeadImg,province,cityId,area,detailedAddress</sql>-->
+    <!--通过用户名密码获得一个用户的个人信息-->
+    <!--<select id="userLogin" parameterType="User" resultMap="UserResult">-->
+    <!--SELECT <include refid="allForOne"/>-->
+    <!--FROM soolife_user,soolife_userInfo,soolife_userAddress-->
+    <!--WHERE userName=#{userName} and userPwd=#{userPwd}-->
+    <!--</select>-->
+    <!--<select id="userLogin" parameterType="User" resultMap="userResult">-->
+		<!--SELECT *-->
+		<!--FROM just_user-->
+		<!--WHERE phone=#{phoneNum} and password=#{password}-->
+	<!--</select>-->
+
+    <!--注册时候所必须的用户字段-->
+    <!--<sql id="userRegReq">(userName,userPwd,userToken)</sql>-->
+    <!--基础注册处理-->
+    <!--<insert id="userReg" parameterType="User">-->
+        <!--INSERT INTO just_user-->
+        <!--<include refid="userRegReq"/>-->
+        <!--VALUES (#{userName},#{userPwd},#{userToken})-->
+    <!--</insert>-->
+    <!--更新userInfo中的手机号（仅限注册时使用，此时userName=userPhone）-->
+    <!--<insert id="userPhone" parameterType="User">-->
+		<!--INSERT INTO just_userInfo-->
+		<!--(userPhone,userId)-->
+		<!--VALUES (#{userName},#{userId})-->
+	<!--</insert>-->
+    <!--通过用户名获得一个用户的id和手机号信息，方便注册使用(此时用户名和手机号内容一致)-->
+    <!--<select id="getUserPhone" parameterType="String" resultMap="UserResult">-->
+		<!--SELECT userId,userName-->
+		<!--FROM just_user-->
+		<!--WHERE userName=#{_parameter}-->
+	<!--</select>-->
+</mapper>
+

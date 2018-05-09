@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.just.dao.PriceMapper">
+	<!-- 商品价格 -->
+	<resultMap id="prices" type="Price">
+		<id column="price_id" property="priceId" javaType="int"/>
+		<result column="price_name" property="priceName" jdbcType="VARCHAR"/>
+		<association property="spec" column="spec_id"
+					 select="com.just.dao.SpecMapper.selectSpecById"/>
+		<association property="unit" column="unit_pid"
+					 select="com.just.dao.UnitMapper.selectUnitById"/>
+		<association property="product" column="p_id"
+					 select="com.just.dao.DetailsMapper.selectProduct"/>
+		<collection	select="com.just.dao.StockMapper.findStockByPriceId"
+					   javaType="java.util.List"
+					   property="stocks"
+					   column="price_Id"
+					   ofType="com.just.entity.Stock"/>
+	</resultMap>
+
+	<resultMap id="priceO" type="Price">
+		<id column="price_id" property="priceId" javaType="int"/>
+		<result column="price_name" property="priceName" jdbcType="VARCHAR"/>
+		<association property="spec" column="spec_id"
+					 select="com.just.dao.SpecMapper.selectSpecById"/>
+		<association property="unit" column="unit_id"
+					 select="com.just.dao.UnitMapper.selectUnitById"/>
+		<association property="product" column="p_id"
+					 select="com.just.dao.DetailsMapper.selectProduct"/>
+	</resultMap>
+	<!--通过id去查询价格-->
+	<select id="selectPriceByPriceId" parameterType="int" resultMap="priceO">
+		select * from price where price_id = #{priceId}
+	</select>
+	<!--在商品页通过价格的三个属性去查询价格-->
+	<select id="selectPriceByThreeLimits" resultMap="prices">
+		SELECT price_id,price_name FROM price WHERE p_id = #{product.productId} AND spec_id=#{spec.specId} AND unit_id=#{unit.unitId}
+	</select>
+	<insert id="addPriceWithOutPriceName" useGeneratedKeys="true" keyProperty="priceId">
+		INSERT INTO price(p_id,spec_id,unit_id) VALUES (#{product.productId},#{spec.specId},#{unit.unitId})
+	</insert>
+	<update id="addPriceName">
+		UPDATE price SET price_name = #{priceName} where price_id = #{priceId}
+	</update>
+
+	<!--查询价格-->
+	<select id="selectPrice" resultType="java.lang.Double">
+		SELECT price_name FROM  price where p_id=#{product.productId} and spec_id=#{spec.specId} and unit_id=#{unit.unitId}
+	</select>
+</mapper>
+

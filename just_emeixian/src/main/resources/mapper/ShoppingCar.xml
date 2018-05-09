@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.just.dao.ShoppingCarMapper">
+
+	<resultMap type="ShoppingCar" id="ShoppingResult" >
+		<id column="shoppingCar_id" property="shoppingCarId" javaType="int"/>
+		<result column="num" property="num" javaType="int"/>
+		<result column="u_Id" property="uId" javaType="int"/>
+		<association property="price" column="price_id"
+					 select="com.just.dao.PriceMapper.selectPriceByPriceId"/>
+		<association property="stock" column="stock_id"
+					 select="com.just.dao.StockMapper.findStockById"/>
+	</resultMap>
+	<!--<parameterMap id="shoppingCarParam" type="ShoppingCar">-->
+	<!--<parameter property="shoppingCarId" javaType="int"/>-->
+	<!--<parameter property="num" javaType="int"/>-->
+	<!--<parameter property="user" resultMap="User.userResult" />-->
+	<!--<parameter property="stock" resultMap="Stock.stocks"/>-->
+	<!--<parameter property="price" resultMap="Price.prices"/>-->
+	<!--</parameterMap>-->
+
+	<!--添加到购物车 通过页面传过来的属性 priceId num(数量) uId(当前用户) 返回当前购物车主键-->
+	<!--<insert id="addToShoppingCar" useGeneratedKeys="true" keyProperty="shoppingCarId">-->
+	<!--INSERT INTO shoppingCar(price_id,num,u_id,stock_id) VALUES (#{0},#{1},#{2},#{3})-->
+	<!--</insert>-->
+
+	<insert id="addToShoppingCar" useGeneratedKeys="true" keyProperty="shoppingCarId">
+		INSERT INTO shoppingCar(price_id,num,u_id,stock_id) VALUES (#{price.price_id},#{num},#{user.uId},#{stock.stockId})
+	</insert>
+	<!--在添加购物车之前将购物车对象传入去查询是否已被用户添加进购物车,如果是 则仅增加数量-->
+	<select id="confirmShopCar" resultType="int">
+		SELECT IFNULL(MAX(shoppingCar_id),0) AS shoppingCarId FROM shoppingCar WHERE price_id=#{price.price_id} AND u_id = #{user.uId} AND stock_id = #{stock.stockId} AND order_id = 0
+	</select>
+	<update id="addNumToShopping">
+		UPDATE shoppingCar SET num = (num + #{num}) WHERE shoppingCar_id = #{shoppingCarId}
+	</update>
+	<!--显示当前用户添加到购物车的商品信息 要求未被添加进购物车  因此需要orderid为0-->
+	<select id="selectShoppingCarsForUser" resultMap="ShoppingResult" parameterType="int">
+		SELECT * FROM shoppingCar WHERE 1=1 AND u_id = #{uid} AND order_id = 0
+	</select>
+	<select id="countShop" resultType="int">
+		SELECT count(*) FROM shoppingCar WHERE 1=1 AND u_id = #{uid} AND order_id = 0
+	</select>
+
+	<!--从购物车删除 直接物理删除 但要求购物车对象未绑定订单(提交) 即order_id = 0 -->
+	<delete id="deleteShoppingCarById">
+		DELETE FROM shoppingCar WHERE order_id = 0 AND shoppingCar_id  IN
+		<foreach collection="shoppingCarId" item="shoppingCarId" separator="," open="(" close=")">
+			#{shoppingCarId}
+		</foreach>
+
+
+	</delete>
+	<!--编辑购物车信息 可以改变所选商品属性-->
+	<update id="updateShoppingCar" useGeneratedKeys="true" keyProperty="shoppingCarId">
+		UPDATE shoppingCar(price_Id,num,stockId) VALUES (#{price.price_id},#{num},#{user.uId},#{stock.stockId}) WHERE shoppingCarId = #{shoppingCarId}
+	</update>
+	<!--当提交订单时 根据生成的订单orderId去改变购物车状态-->
+	<update id="orderShoppingCars">
+		UPDATE shoppingCar SET order_id =  #{orderId}
+		WHERE shoppingCar_id IN
+		<foreach collection="shoppingCars"  item="shoppingCar" open="(" close=")" separator=",">
+			#{shoppingCar.shoppingCarId}
+		</foreach>
+		and order_id = 0;
+	</update>
+	<!--当访问订单时 通过orderId加载出对应的订单信息 -->
+	<select id="selectShoppingCarsForOrder" parameterType="int" resultMap="ShoppingResult">
+		SELECT * FROM shoppingCar WHERE order_id = #{orderId}
+	</select>
+
+	<select id="selectShoppingCarById" parameterType="int" resultMap="ShoppingResult">
+		SELECT * FROM shoppingCar WHERE shoppingCar_id = #{shoppingCarId}
+	</select>
+	<!--修改购物车商品的数量-->
+	<update id="updateShopNum">
+		UPDATE shoppingCar SET num = #{num} where shoppingCar_id = #{shoppingCarId}
+	</update>
+
+</mapper>

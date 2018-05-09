@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.just.dao.UserMapper">
+
+	<!-- UserHistory类映射 -->
+	<resultMap type="UserHistory" id="UserHistoryResult">
+		<id column="history_id" jdbcType="INTEGER" property="userHistoryId" />
+		<result column="user_id" jdbcType="INTEGER" property="userId"/>
+		<result column="hits_from" jdbcType="INTEGER" property="hitsFromThisUser"/>
+		<result column="last_hitTime" javaType="java.util.Date"  property="lastHitTime"/>
+		<association column="product_id"  property="product"
+					 select="com.just.dao.ProductMapper.selectProduct"/>
+	</resultMap>
+
+	<select id="findHistoryList" parameterType="int" resultMap="UserHistoryResult">
+		select * from user_history where user_id = #{userId}
+	</select>
+
+	<select id="countHistory" resultType="int">
+		select count(history_id)
+		from user_history
+		where user_id = #{userId}
+		AND product_id = #{product.productId}
+	</select>
+
+	<insert id="addToHistory">
+		INSERT INTO user_history(product_id,user_id,last_hit) VALUES (#{product.productId},#{userId},#{lastHitTime})
+	</insert>
+
+	<update id="updateHistory">
+		UPDATE user_history
+		SET hits_from = hits_from + 1 ,
+			last_hit = #{lastHitTime}
+		WHERE history_id = #{userHistoryId}
+	</update>
+	<delete id="deleteHistory" parameterType="int">
+		DELETE FROM user_history WHERE 1=1 AND history_id = #{userHistoryId}
+	</delete>
+
+</mapper>
