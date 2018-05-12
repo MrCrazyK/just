@@ -118,7 +118,8 @@ public class UserController {
                 results.put("user",loginUser);
             }
             request.getSession().setAttribute("currentUser",loginUser);
-            Cookie cookieName = new Cookie("name",user.getName());
+            Cookie cookieName = new Cookie("name",user.getName()
+            );
             Cookie cookiePwd = new Cookie("pwd",user.getName());
             cookieName.setMaxAge(60*60*24);
             cookiePwd.setMaxAge(60*60*24);

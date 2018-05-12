@@ -41,6 +41,10 @@ public class ProductController {
         FastJson_All.toJson(maps,response);
 
     }
+
+    public void searchProducts(String keyword){
+
+    }
     @RequestMapping("/addNew")
     public void newProduct(Product product,Integer[] specs, Integer[] units,HttpServletResponse response){
         System.out.println(specs);
