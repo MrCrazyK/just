@@ -31,10 +31,10 @@ public class User {
     private  String name;
 //    用户类型
     private int userType;
-
+//  用户token 用于登录注册时进行md5加密和匹配使用
+    private String userToken;
     private  String detailed;
     private  int road;
-    private String userToken;
 
     public String getUserToken() {
         return userToken;
